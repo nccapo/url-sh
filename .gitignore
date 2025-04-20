@@ -1,0 +1,52 @@
+# Ignore operating system generated files
+*.log
+tmp/
+*.tmp
+.db
+*.db-gorm*
+*.swp
+
+# Ignore node modules
+node_modules/
+
+# Ignore yarn cache
+.yarn
+
+# Ignore npm cache
+.npm
+
+# Ignore build artifacts
+dist/
+*.min.js
+*.min.css
+*.js.map
+*.css.map
+
+# Ignore virtual environment files
+venv/
+__pycache__
+.pyc
+.pyo
+*.egg-info
+*.whl
+*.egg
+
+# Ignore eclipse project files
+.eclipse/
+
+# Ignore ide generated files
+.idea/
+*.iml
+.sfproj
+*.nspsrc
+*.sln
+
+# Ignore android build artifacts
+gradle/
+build/
+
+# Ignore IntelliJ project files
+.intellij*
+
+# Ignore environment variables
+.env
