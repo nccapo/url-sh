@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	"github.com/nccapo/url-sh/config"
+	"github.com/nccapo/url-sh/gen"
 )
 
 func main() {
-	cfg, err := config.NewConfig(
+	_, err := config.NewConfig(
 		config.WithMaxRedirects(10),
 		config.WithBaseURL("urls"),
 	)
@@ -16,5 +17,11 @@ func main() {
 		return
 	}
 
-	fmt.Printf("%+v\n", cfg)
+	shortener := gen.NewShortener("http://localhost:8080")
+	shortener.OriginalURL = "https://example.com"
+
+	shortener.Method = gen.Secure
+	shortener.GenerateShortURL("")
+
+	fmt.Printf("%+v\n", shortener)
 }
