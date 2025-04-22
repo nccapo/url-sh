@@ -1,11 +1,6 @@
 // Package config provides configuration settings for the URL shortener service.
 package config
 
-// GetDatabaseURL returns the database URL
-func (c *Config) GetDatabaseURL() string {
-	return c.DatabaseURL
-}
-
 // GetPort returns the port
 func (c *Config) GetPort() int {
 	return c.Port
@@ -49,7 +44,7 @@ func (c *Config) GetMaxRedirectsPerUser() int {
 // WithDatabaseURL configures the database URL.
 func WithDatabaseURL(url string) Option {
 	return func(c *Config) {
-		c.DatabaseURL = url
+		c.DBConfig.Addr = url
 	}
 }
 

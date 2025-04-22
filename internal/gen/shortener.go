@@ -13,6 +13,8 @@ import (
 	"math/big"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Method type is used to identify which strategy is used to generate the short URL.
@@ -43,11 +45,13 @@ const (
 // Shortener provides basic setup and functionality for the URL Shortener.
 type Shortener struct {
 	// ID is the unique identifier for the short URL.
-	ID int16
+	ID uuid.UUID
 	// OriginalURL is the original URL to be shortened.
 	OriginalURL string
 	// ShortURL is the shortened URL.
 	ShortURL string
+	// ShortCode is the unique code for the short URL.
+	ShortCode string
 	// BaseURL is the domain for shortened URLs
 	BaseURL string
 	// Expiration is the expiration time for the short URL.
@@ -65,6 +69,7 @@ type Shortener struct {
 // NewShortener creates a new Shortener instance.
 func NewShortener(baseURL string) *Shortener {
 	return &Shortener{
+		ID:           uuid.New(), // generate a new UUID
 		BaseURL:      baseURL,
 		Expiration:   time.Now().Add(time.Hour * 24),
 		LastAccessed: time.Now(),
@@ -75,7 +80,7 @@ func NewShortener(baseURL string) *Shortener {
 
 // GenerateShortURL generates a short URL based on the specified method
 func (s *Shortener) GenerateShortURL(customAlias string) error {
-	var path string
+	var short string
 	var err error
 
 	switch s.Method {
@@ -83,19 +88,19 @@ func (s *Shortener) GenerateShortURL(customAlias string) error {
 		if customAlias == "" {
 			return errors.New("custom alias cannot be empty")
 		}
-		path = customAlias
+		short = customAlias
 
 	case Random:
-		path, err = generateRandomString(defaultRandomLength)
+		short, err = generateRandomString(defaultRandomLength)
 		if err != nil {
 			return err
 		}
 
 	case Hash:
-		path = generateHashBasedURL(s.OriginalURL)
+		short = generateHashBasedURL(s.OriginalURL)
 
 	case Secure:
-		path, err = generateSecureURL(s.OriginalURL)
+		short, err = generateSecureURL(s.OriginalURL)
 		if err != nil {
 			return err
 		}
@@ -105,7 +110,7 @@ func (s *Shortener) GenerateShortURL(customAlias string) error {
 	}
 
 	// Combine base URL with generated path
-	s.ShortURL = formatShortURL(s.BaseURL, path)
+	s.ShortURL = formatShortURL(s.BaseURL, short)
 	return nil
 }
 

@@ -1,7 +1,9 @@
+import { Component } from "solid-js";
+import { Router, Route } from "@solidjs/router";
 import { ThemeProvider, createTheme } from "@suid/material";
 import CssBaseline from "@suid/material/CssBaseline";
 import UrlShortener from "./components/UrlShortener";
-import { Box } from "@suid/material";
+import UrlStats from "./components/UrlStats";
 
 const theme = createTheme({
   palette: {
@@ -9,33 +11,43 @@ const theme = createTheme({
     primary: {
       main: "#90caf9",
     },
-    secondary: {
-      main: "#f48fb1",
-    },
     background: {
       default: "#121212",
       paper: "#1e1e1e",
     },
   },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  components: {
+    MuiButton: {
+      defaultProps: {
+        sx: {
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiPaper: {
+      defaultProps: {
+        sx: {
+          borderRadius: 12,
+        },
+      },
+    },
+  },
 });
 
-function App() {
+const App: Component = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "background.default",
-        }}
-      >
-        <UrlShortener />
-      </Box>
+      <Router>
+        <Route path="/" component={UrlShortener} />
+        <Route path="/stats" component={UrlStats} />
+        <Route path="/stats/:shortCode" component={UrlStats} />
+      </Router>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

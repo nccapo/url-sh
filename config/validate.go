@@ -19,7 +19,7 @@ func (c *Config) validate() []ConfigMessage {
 	var messages []ConfigMessage
 
 	// Database URL validation
-	if c.DatabaseURL == "" {
+	if c.DBConfig.Addr == "" {
 		messages = append(messages, newConfigMessage(ERROR, "database URL is required"))
 	}
 

@@ -11,8 +11,11 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/x-date-pickers": "^8.0.0",
+    "@solidjs/router": "^0.15.3",
     "@suid/icons-material": "^0.8.1",
     "@suid/material": "^0.18.0",
+    "date-fns": "^4.1.0",
     "solid-js": "^1.9.5"
   },
   "devDependencies": {
