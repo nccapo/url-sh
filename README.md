@@ -1,6 +1,6 @@
 # URL Shortener
 
-A modern, fast, and user-friendly URL shortening service built with SolidJS, FastAPI, and MongoDB.
+A modern, fast, and user-friendly URL shortening service built with SolidJS, FastAPI, and PostgreSQL.
 
 ## Features
 
@@ -23,7 +23,8 @@ A modern, fast, and user-friendly URL shortening service built with SolidJS, Fas
 ### Backend
 
 - **FastAPI**: Modern, fast web framework for building APIs
-- **MongoDB**: NoSQL database for storing URLs and analytics
+- **PostgreSQL**: Relational database for storing URLs and analytics
+- **SQLAlchemy**: SQL toolkit and ORM for Python
 - **Pydantic**: Data validation using Python type annotations
 - **Uvicorn**: ASGI server for running the FastAPI application
 
@@ -69,7 +70,7 @@ docker-compose down -v
 
    - Node.js (v14+)
    - Python (v3.8+)
-   - MongoDB
+   - PostgreSQL
 
 2. Clone the repository:
 
@@ -96,8 +97,7 @@ docker-compose down -v
    Create a `.env` file in the backend directory with the following variables:
 
    ```
-   MONGODB_URI=mongodb://localhost:27017
-   DATABASE_NAME=url_shortener
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/url_shortener
    BASE_URL=http://localhost:3000
    ```
 
@@ -163,5 +163,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [SolidJS](https://www.solidjs.com/)
 - [FastAPI](https://fastapi.tiangolo.com/)
-- [MongoDB](https://www.mongodb.com/)
+- [PostgreSQL](https://www.postgresql.org/)
 - [SUID](https://suid.io/)

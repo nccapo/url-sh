@@ -17,20 +17,23 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017
-      - DATABASE_NAME=url_shortener
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/url_shortener
       - BASE_URL=http://localhost:3000
     depends_on:
-      - mongodb
+      - postgres
     networks:
       - url-shortener-network
 
-  mongodb:
-    image: mongo:latest
+  postgres:
+    image: postgres:14-alpine
     ports:
-      - "27017:27017"
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=url_shortener
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - url-shortener-network
 
@@ -39,4 +42,4 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
+  postgres_data:

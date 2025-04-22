@@ -141,6 +141,23 @@ Deletes a specific short URL.
     }
     ```
 
+## Database Schema
+
+The application uses PostgreSQL with the following schema:
+
+### URLs Table
+
+```sql
+CREATE TABLE urls (
+    id SERIAL PRIMARY KEY,
+    short_code VARCHAR(50) UNIQUE NOT NULL,
+    long_url TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    clicks INTEGER DEFAULT 0,
+    last_clicked TIMESTAMP WITH TIME ZONE
+);
+```
+
 ## Error Codes
 
 - **400 Bad Request**: The request was invalid or cannot be served.
