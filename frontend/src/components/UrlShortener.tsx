@@ -102,6 +102,7 @@ const UrlShortener: Component = () => {
       }
 
       const data: ShortenerResponse = await response.json();
+      console.log(data.shortener, "< - shorten");
       setShortenedUrl(data.shortener.short_url);
       navigate(`/stats/${data.shortener.short_code}`);
     } catch (err) {

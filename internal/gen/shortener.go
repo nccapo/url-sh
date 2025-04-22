@@ -110,6 +110,7 @@ func (s *Shortener) GenerateShortURL(customAlias string) error {
 	}
 
 	// Combine base URL with generated path
+	s.ShortCode = short
 	s.ShortURL = formatShortURL(s.BaseURL, short)
 	return nil
 }
