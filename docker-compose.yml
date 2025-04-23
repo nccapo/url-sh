@@ -2,44 +2,40 @@ version: "3.8"
 
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     depends_on:
       - backend
-    networks:
-      - url-shortener-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/url_shortener
-      - BASE_URL=http://localhost:3000
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/urlshortener
     depends_on:
-      - postgres
-    networks:
-      - url-shortener-network
+      - db
 
-  postgres:
+  db:
     image: postgres:14-alpine
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=url_shortener
+      - POSTGRES_DB=urlshortener
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - url-shortener-network
-
-networks:
-  url-shortener-network:
-    driver: bridge
 
 volumes:
   postgres_data:

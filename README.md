@@ -1,6 +1,6 @@
 # URL Shortener
 
-A modern, fast, and user-friendly URL shortening service built with SolidJS, FastAPI, and PostgreSQL.
+A modern, fast, and user-friendly URL shortening service built with SolidJS, Node.js, and PostgreSQL.
 
 ## Features
 
@@ -22,11 +22,11 @@ A modern, fast, and user-friendly URL shortening service built with SolidJS, Fas
 
 ### Backend
 
-- **FastAPI**: Modern, fast web framework for building APIs
+- **Node.js**: JavaScript runtime for the server
+- **Express**: Web framework for Node.js
 - **PostgreSQL**: Relational database for storing URLs and analytics
-- **SQLAlchemy**: SQL toolkit and ORM for Python
-- **Pydantic**: Data validation using Python type annotations
-- **Uvicorn**: ASGI server for running the FastAPI application
+- **TypeORM**: Object-Relational Mapping for TypeScript
+- **TypeScript**: Type-safe JavaScript
 
 ## Installation & Setup
 
@@ -69,7 +69,6 @@ docker-compose down -v
 1. Prerequisites:
 
    - Node.js (v14+)
-   - Python (v3.8+)
    - PostgreSQL
 
 2. Clone the repository:
@@ -90,7 +89,7 @@ docker-compose down -v
 
    ```bash
    cd ../backend
-   pip install -r requirements.txt
+   npm install
    ```
 
 5. Set up environment variables:
@@ -105,7 +104,7 @@ docker-compose down -v
 
    ```bash
    cd backend
-   uvicorn main:app --reload
+   npm run dev
    ```
 
 7. Start the frontend development server:
@@ -136,7 +135,7 @@ npm test
 
 # Backend tests
 cd backend
-pytest
+npm test
 ```
 
 ### Building for Production
@@ -148,7 +147,7 @@ npm run build
 
 # Backend
 cd backend
-python -m build
+npm run build
 ```
 
 ## API Documentation
@@ -162,6 +161,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - [SolidJS](https://www.solidjs.com/)
-- [FastAPI](https://fastapi.tiangolo.com/)
+- [Node.js](https://nodejs.org/)
+- [Express](https://expressjs.com/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [SUID](https://suid.io/)

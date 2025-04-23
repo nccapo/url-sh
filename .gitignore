@@ -51,3 +51,4 @@ build/
 # Ignore environment variables
 .env
 bin/
+.cursor
