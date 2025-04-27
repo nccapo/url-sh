@@ -22,6 +22,12 @@ type URLShortener struct {
 	LastAccessed  time.Time `json:"last_accessed"`
 	LastModified  time.Time `json:"last_modified"`
 	Method        string    `json:"method"`
+	// UTM Parameters
+	UTMSource   string `json:"utm_source,omitempty"`
+	UTMMedium   string `json:"utm_medium,omitempty"`
+	UTMCampaign string `json:"utm_campaign,omitempty"`
+	UTMTerm     string `json:"utm_term,omitempty"`
+	UTMContent  string `json:"utm_content,omitempty"`
 }
 
 type PostgresURLShortener struct {
@@ -38,7 +44,11 @@ func (u *URLShortener) formatShortURL() string {
 }
 
 func (p *PostgresURLShortener) Create(ctx context.Context, model *URLShortener) (*URLShortener, error) {
-	query := `INSERT INTO short_urls (original_url, short_code, base_url, expiration, redirect_count, last_accessed, last_modified, method) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, iid`
+	query := `INSERT INTO short_urls (
+		original_url, short_code, base_url, expiration, redirect_count, 
+		last_accessed, last_modified, method, utm_source, utm_medium, 
+		utm_campaign, utm_term, utm_content
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, iid`
 
 	model.BaseURL = model.formatShortURL()
 	err := p.db.QueryRowContext(ctx, query,
@@ -49,7 +59,13 @@ func (p *PostgresURLShortener) Create(ctx context.Context, model *URLShortener) 
 		model.RedirectCount,
 		model.LastAccessed,
 		model.LastModified,
-		model.Method).Scan(&model.ID, &model.IID)
+		model.Method,
+		model.UTMSource,
+		model.UTMMedium,
+		model.UTMCampaign,
+		model.UTMTerm,
+		model.UTMContent,
+	).Scan(&model.ID, &model.IID)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +76,10 @@ func (p *PostgresURLShortener) Create(ctx context.Context, model *URLShortener) 
 }
 
 func (p *PostgresURLShortener) FindWithShortCode(ctx context.Context, shortCode string) (*URLShortener, error) {
-	query := `SELECT id, iid, original_url, short_code, base_url, expiration, redirect_count, last_accessed, last_modified, method FROM short_urls WHERE short_code = $1`
+	query := `SELECT id, iid, original_url, short_code, base_url, expiration, 
+		redirect_count, last_accessed, last_modified, method, utm_source, 
+		utm_medium, utm_campaign, utm_term, utm_content 
+		FROM short_urls WHERE short_code = $1`
 
 	var model URLShortener
 	err := p.db.QueryRowContext(ctx, query, shortCode).Scan(
@@ -74,6 +93,11 @@ func (p *PostgresURLShortener) FindWithShortCode(ctx context.Context, shortCode 
 		&model.LastAccessed,
 		&model.LastModified,
 		&model.Method,
+		&model.UTMSource,
+		&model.UTMMedium,
+		&model.UTMCampaign,
+		&model.UTMTerm,
+		&model.UTMContent,
 	)
 	if err != nil {
 		return nil, err
@@ -85,7 +109,10 @@ func (p *PostgresURLShortener) FindWithShortCode(ctx context.Context, shortCode 
 }
 
 func (p *PostgresURLShortener) FindWithURL(ctx context.Context, shortURL string) (*URLShortener, error) {
-	query := `SELECT id, iid, original_url, short_code, base_url, expiration, redirect_count, last_accessed, last_modified, method FROM short_urls WHERE base_url = $1`
+	query := `SELECT id, iid, original_url, short_code, base_url, expiration, 
+		redirect_count, last_accessed, last_modified, method, utm_source, 
+		utm_medium, utm_campaign, utm_term, utm_content 
+		FROM short_urls WHERE base_url = $1`
 
 	var model URLShortener
 	err := p.db.QueryRowContext(ctx, query, shortURL).Scan(
@@ -99,6 +126,11 @@ func (p *PostgresURLShortener) FindWithURL(ctx context.Context, shortURL string)
 		&model.LastAccessed,
 		&model.LastModified,
 		&model.Method,
+		&model.UTMSource,
+		&model.UTMMedium,
+		&model.UTMCampaign,
+		&model.UTMTerm,
+		&model.UTMContent,
 	)
 	if err != nil {
 		return nil, err

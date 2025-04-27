@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, createEffect } from "solid-js";
 import {
   Box,
   Button,
@@ -52,6 +52,11 @@ type ShortenerResponse = {
     last_accessed: string;
     last_modified: string;
     method: string;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    utm_term?: string;
+    utm_content?: string;
   };
 };
 
@@ -71,6 +76,13 @@ const UrlShortener: Component = () => {
   >(null);
   const [isLoadingStats, setIsLoadingStats] = createSignal<boolean>(false);
   const [shortCode, setShortCode] = createSignal<string>("");
+  // UTM Parameters
+  const [showUtmParams, setShowUtmParams] = createSignal<boolean>(false);
+  const [utmSource, setUtmSource] = createSignal<string>("");
+  const [utmMedium, setUtmMedium] = createSignal<string>("");
+  const [utmCampaign, setUtmCampaign] = createSignal<string>("");
+  const [utmTerm, setUtmTerm] = createSignal<string>("");
+  const [utmContent, setUtmContent] = createSignal<string>("");
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -94,6 +106,11 @@ const UrlShortener: Component = () => {
           url: url(),
           method: method(),
           alias: customAlias(),
+          utm_source: utmSource(),
+          utm_medium: utmMedium(),
+          utm_campaign: utmCampaign(),
+          utm_term: utmTerm(),
+          utm_content: utmContent(),
         }),
       });
 
@@ -132,6 +149,13 @@ const UrlShortener: Component = () => {
     setEnableExpiration(false);
     setExpiration("");
     setUrlStats(null);
+    // Reset UTM parameters
+    setUtmSource("");
+    setUtmMedium("");
+    setUtmCampaign("");
+    setUtmTerm("");
+    setUtmContent("");
+    setShowUtmParams(false);
   };
 
   // Get method description
@@ -239,6 +263,11 @@ const UrlShortener: Component = () => {
     navigate("/stats");
   };
 
+  // Add an effect to log when showUtmParams changes
+  createEffect(() => {
+    console.log("showUtmParams changed to:", showUtmParams());
+  });
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ width: "100%", minHeight: "100vh", py: 4 }}>
@@ -272,6 +301,7 @@ const UrlShortener: Component = () => {
               fontWeight: "bold",
               textTransform: "none",
               boxShadow: "0 4px 12px rgba(144, 202, 249, 0.3)",
+              borderRadius: 0,
             }}
           >
             View URL Statistics
@@ -291,186 +321,171 @@ const UrlShortener: Component = () => {
         >
           {!urlStats() ? (
             <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Enter URL to shorten"
-                variant="outlined"
-                value={url()}
-                onChange={(e) => setUrl(e.target.value)}
-                error={!!error()}
-                helperText={error()}
-                sx={{
-                  mb: 3,
-                  "& .MuiOutlinedInput-root": {
-                    "&:hover fieldset": {
-                      borderColor: "primary.main",
-                    },
-                  },
-                }}
-              />
-
-              <Box sx={{ mb: 3 }}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel id="method-select-label">
-                    Shortening Method
-                  </InputLabel>
-                  <Select
-                    labelId="method-select-label"
-                    value={method()}
-                    onChange={(e) =>
-                      setMethod(e.target.value as ShorteningMethod)
-                    }
-                    label="Shortening Method"
-                    sx={{
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgba(255, 255, 255, 0.23)",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "primary.main",
-                      },
-                    }}
-                  >
-                    <MenuItem value="RANDOM">
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <ShuffleIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography variant="body1">Random</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Generate a random short URL
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </MenuItem>
-                    <MenuItem value="CUSTOM">
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <AutoFixHighIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography variant="body1">Custom</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Create a custom short URL
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </MenuItem>
-                    <MenuItem value="HASH">
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <CodeIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography variant="body1">Hash</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Create a hash-based short URL
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </MenuItem>
-                    <MenuItem value="SECURE">
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <LockIcon sx={{ color: "primary.main" }} />
-                        <Box>
-                          <Typography variant="body1">Secure</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Generate a secure short URL
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1 }}
-                >
-                  {getMethodIcon(method())}
-                  {getMethodDescription(method())}
-                </Typography>
-              </Box>
-
-              {method() === "CUSTOM" && (
-                <TextField
-                  fullWidth
-                  label="Custom Alias (optional)"
-                  variant="outlined"
-                  value={customAlias()}
-                  onChange={(e) => setCustomAlias(e.target.value)}
-                  placeholder="my-custom-url"
-                  sx={{
-                    mb: 3,
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover fieldset": {
-                        borderColor: "primary.main",
-                      },
-                    },
-                  }}
-                  helperText="Leave empty for a random alias"
-                />
-              )}
-
-              {/* Expiration Time Section */}
-              <Box sx={{ mb: 3 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={enableExpiration()}
-                      onchange={() => setEnableExpiration(!enableExpiration())}
-                      color="primary"
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <TimerIcon sx={{ color: "primary.main" }} />
-                      <Typography>Set Expiration Time</Typography>
-                    </Box>
-                  }
-                />
-
-                {enableExpiration() && (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Expiration Time"
+                    label="Enter URL to shorten"
                     variant="outlined"
-                    value={expiration()}
-                    onChange={(e) => setExpiration(e.target.value)}
-                    placeholder="2023-12-31T23:59:59Z"
-                    sx={{
-                      mt: 2,
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": {
-                          borderColor: "primary.main",
-                        },
-                      },
-                    }}
-                    helperText="ISO 8601 format (e.g., 2023-12-31T23:59:59Z)"
+                    value={url()}
+                    onChange={(e) => setUrl(e.target.value)}
+                    error={!!error()}
+                    helperText={error()}
+                    required
                   />
-                )}
-              </Box>
+                </Grid>
 
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isLoading()}
-                sx={{
-                  mb: 3,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  textTransform: "none",
-                  boxShadow: "0 4px 12px rgba(144, 202, 249, 0.3)",
-                }}
-              >
-                {isLoading() ? "Shortening..." : "Shorten URL"}
-              </Button>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Shortening Method</InputLabel>
+                    <Select
+                      value={method()}
+                      onChange={(e) =>
+                        setMethod(e.target.value as ShorteningMethod)
+                      }
+                      label="Shortening Method"
+                    >
+                      <MenuItem value="CUSTOM">
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <AutoFixHighIcon sx={{ color: "primary.main" }} />
+                          <span>Custom Alias</span>
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="RANDOM">
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <ShuffleIcon sx={{ color: "primary.main" }} />
+                          <span>Random</span>
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="HASH">
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <CodeIcon sx={{ color: "primary.main" }} />
+                          <span>Hash</span>
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="SECURE">
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <LockIcon sx={{ color: "primary.main" }} />
+                          <span>Secure</span>
+                        </Box>
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                {method() === "CUSTOM" && (
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Custom Alias"
+                      variant="outlined"
+                      value={customAlias()}
+                      onChange={(e) => setCustomAlias(e.target.value)}
+                    />
+                  </Grid>
+                )}
+
+                <Grid item xs={12}>
+                  <Button
+                    variant={showUtmParams() ? "contained" : "outlined"}
+                    color="primary"
+                    onClick={() => {
+                      console.log(
+                        "Toggle clicked, current value:",
+                        showUtmParams()
+                      );
+                      setShowUtmParams(!showUtmParams());
+                    }}
+                    startIcon={showUtmParams() ? <LinkIcon /> : <LinkOffIcon />}
+                    sx={{ mb: 2, borderRadius: 0, py: 1.5, px: 3 }}
+                  >
+                    {showUtmParams()
+                      ? "Hide UTM Parameters"
+                      : "Add UTM Parameters"}
+                  </Button>
+                </Grid>
+
+                {showUtmParams() ? (
+                  <Box sx={{ width: "100%" }}>
+                    <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                      UTM Parameters
+                    </Typography>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="UTM Source"
+                          variant="outlined"
+                          value={utmSource()}
+                          onChange={(e) => setUtmSource(e.target.value)}
+                          placeholder="e.g., newsletter"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="UTM Medium"
+                          variant="outlined"
+                          value={utmMedium()}
+                          onChange={(e) => setUtmMedium(e.target.value)}
+                          placeholder="e.g., email"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="UTM Campaign"
+                          variant="outlined"
+                          value={utmCampaign()}
+                          onChange={(e) => setUtmCampaign(e.target.value)}
+                          placeholder="e.g., summer_sale"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="UTM Term"
+                          variant="outlined"
+                          value={utmTerm()}
+                          onChange={(e) => setUtmTerm(e.target.value)}
+                          placeholder="e.g., running+shoes"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="UTM Content"
+                          variant="outlined"
+                          value={utmContent()}
+                          onChange={(e) => setUtmContent(e.target.value)}
+                          placeholder="e.g., textlink"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                ) : null}
+
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={isLoading()}
+                    sx={{ borderRadius: 0, py: 1.5, px: 3 }}
+                  >
+                    {isLoading() ? "Shortening..." : "Shorten URL"}
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
           ) : (
             <Box>

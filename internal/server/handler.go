@@ -4,6 +4,8 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/nccapo/url-sh/internal/gen"
@@ -20,6 +22,12 @@ type URLRequest struct {
 	URL    string     `json:"url"`
 	Method gen.Method `json:"method"`
 	Alias  string     `json:"alias"`
+	// UTM Parameters
+	UTMSource   string `json:"utm_source,omitempty"`
+	UTMMedium   string `json:"utm_medium,omitempty"`
+	UTMCampaign string `json:"utm_campaign,omitempty"`
+	UTMTerm     string `json:"utm_term,omitempty"`
+	UTMContent  string `json:"utm_content,omitempty"`
 }
 
 func (h *Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +57,11 @@ func (h *Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
 		RedirectCount: 0,
 		LastAccessed:  time.Now(),
 		LastModified:  time.Now(),
+		UTMSource:     req.UTMSource,
+		UTMMedium:     req.UTMMedium,
+		UTMCampaign:   req.UTMCampaign,
+		UTMTerm:       req.UTMTerm,
+		UTMContent:    req.UTMContent,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,7 +136,35 @@ func (h *Handler) UpdateVisitsCount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, uResp.OriginalURL, http.StatusFound)
+	// Build the redirect URL with UTM parameters if they exist
+	redirectURL := uResp.OriginalURL
+	if uResp.UTMSource != "" || uResp.UTMMedium != "" || uResp.UTMCampaign != "" || uResp.UTMTerm != "" || uResp.UTMContent != "" {
+		params := url.Values{}
+		if uResp.UTMSource != "" {
+			params.Add("utm_source", uResp.UTMSource)
+		}
+		if uResp.UTMMedium != "" {
+			params.Add("utm_medium", uResp.UTMMedium)
+		}
+		if uResp.UTMCampaign != "" {
+			params.Add("utm_campaign", uResp.UTMCampaign)
+		}
+		if uResp.UTMTerm != "" {
+			params.Add("utm_term", uResp.UTMTerm)
+		}
+		if uResp.UTMContent != "" {
+			params.Add("utm_content", uResp.UTMContent)
+		}
+
+		// Check if the original URL already has query parameters
+		if strings.Contains(redirectURL, "?") {
+			redirectURL += "&" + params.Encode()
+		} else {
+			redirectURL += "?" + params.Encode()
+		}
+	}
+
+	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 func (h *Handler) FindWithURL(w http.ResponseWriter, r *http.Request) {
