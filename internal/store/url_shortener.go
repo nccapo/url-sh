@@ -45,8 +45,8 @@ func (u *URLShortener) formatShortURL() string {
 
 func (p *PostgresURLShortener) Create(ctx context.Context, model *URLShortener) (*URLShortener, error) {
 	query := `INSERT INTO short_urls (
-		original_url, short_code, base_url, expiration, redirect_count, 
-		last_accessed, last_modified, method, utm_source, utm_medium, 
+		original_url, short_code, base_url, expiration, redirect_count,
+		last_accessed, last_modified, method, utm_source, utm_medium,
 		utm_campaign, utm_term, utm_content
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, iid`
 
@@ -76,9 +76,9 @@ func (p *PostgresURLShortener) Create(ctx context.Context, model *URLShortener) 
 }
 
 func (p *PostgresURLShortener) FindWithShortCode(ctx context.Context, shortCode string) (*URLShortener, error) {
-	query := `SELECT id, iid, original_url, short_code, base_url, expiration, 
-		redirect_count, last_accessed, last_modified, method, utm_source, 
-		utm_medium, utm_campaign, utm_term, utm_content 
+	query := `SELECT id, iid, original_url, short_code, base_url, expiration,
+		redirect_count, last_accessed, last_modified, method, utm_source,
+		utm_medium, utm_campaign, utm_term, utm_content
 		FROM short_urls WHERE short_code = $1`
 
 	var model URLShortener
@@ -109,10 +109,10 @@ func (p *PostgresURLShortener) FindWithShortCode(ctx context.Context, shortCode 
 }
 
 func (p *PostgresURLShortener) FindWithURL(ctx context.Context, shortURL string) (*URLShortener, error) {
-	query := `SELECT id, iid, original_url, short_code, base_url, expiration, 
-		redirect_count, last_accessed, last_modified, method, utm_source, 
-		utm_medium, utm_campaign, utm_term, utm_content 
-		FROM short_urls WHERE base_url = $1`
+	query := `SELECT id, iid, original_url, short_code, base_url, expiration,
+		redirect_count, last_accessed, last_modified, method, utm_source,
+		utm_medium, utm_campaign, utm_term, utm_content
+		FROM short_urls WHERE base_url = $1 OR short_code = $1`
 
 	var model URLShortener
 	err := p.db.QueryRowContext(ctx, query, shortURL).Scan(

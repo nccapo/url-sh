@@ -118,6 +118,12 @@ func (h *Handler) GetURLStats(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateVisitsCount(w http.ResponseWriter, r *http.Request) {
+	// Get IP address
+	ipAddress := getIPAddress(r)
+
+	// Get User Agent
+	userAgent := r.Header.Get("User-Agent")
+
 	code := r.PathValue("code")
 	if code == "" {
 		http.Error(w, "code is required", http.StatusBadRequest)
@@ -125,6 +131,17 @@ func (h *Handler) UpdateVisitsCount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uResp, err := h.Store.Shortener.FindWithShortCode(r.Context(), code)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.Store.AccessLogs.CreateLog(r.Context(), &store.AccessLog{
+		IPAddress:  ipAddress,
+		UserAgent:  userAgent,
+		ShortURLID: int64(uResp.ID),
+		AccessedAt: time.Now(),
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -185,6 +202,99 @@ func (h *Handler) FindWithURL(w http.ResponseWriter, r *http.Request) {
 		Shortener interface{} `json:"shortener"`
 	}{
 		Shortener: uResp,
+	}
+
+	// Set content type header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Encode and send the response
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) LastAccessed(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.URL.Query().Get("q")
+	if shortURL == "" {
+		http.Error(w, "shortURL is required", http.StatusBadRequest)
+		return
+	}
+
+	uResp, err := h.Store.AccessLogs.LastAccessed(r.Context(), shortURL)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Create response struct
+	response := struct {
+		LastAccessed interface{} `json:"last_accessed"`
+	}{
+		LastAccessed: uResp,
+	}
+
+	// Set content type header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Encode and send the response
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) TopUserAgents(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.URL.Query().Get("q")
+	if shortURL == "" {
+		http.Error(w, "shortURL is required", http.StatusBadRequest)
+		return
+	}
+
+	uResp, err := h.Store.AccessLogs.TopUserAgents(r.Context(), shortURL)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Create response struct
+	response := struct {
+		TopUserAgents interface{} `json:"top_user_agents"`
+	}{
+		TopUserAgents: uResp,
+	}
+
+	// Set content type header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Encode and send the response
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) UniqueIPs(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.URL.Query().Get("q")
+	if shortURL == "" {
+		http.Error(w, "shortURL is required", http.StatusBadRequest)
+		return
+	}
+
+	uResp, err := h.Store.AccessLogs.UniqueIPAddresses(r.Context(), shortURL)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Create response struct
+	response := struct {
+		UniqueIPs interface{} `json:"unique_ips"`
+	}{
+		UniqueIPs: uResp,
 	}
 
 	// Set content type header

@@ -312,7 +312,7 @@ const UrlShortener: Component = () => {
           elevation={3}
           sx={{
             p: 4,
-            borderRadius: 2,
+            borderRadius: 0.1,
             bgcolor: "background.paper",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
             mb: 6,
@@ -324,6 +324,7 @@ const UrlShortener: Component = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
+                    sx={{ borderRadius: 0 }}
                     fullWidth
                     label="Enter URL to shorten"
                     variant="outlined"
@@ -350,7 +351,16 @@ const UrlShortener: Component = () => {
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
                           <AutoFixHighIcon sx={{ color: "primary.main" }} />
-                          <span>Custom Alias</span>
+                          <Box>
+                            <Typography>Custom Alias</Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Custom method generates a custom short URL with
+                              your own alias
+                            </Typography>
+                          </Box>
                         </Box>
                       </MenuItem>
                       <MenuItem value="RANDOM">
@@ -358,7 +368,16 @@ const UrlShortener: Component = () => {
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
                           <ShuffleIcon sx={{ color: "primary.main" }} />
-                          <span>Random</span>
+                          <Box>
+                            <Typography>Random</Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Random method generates a random short URL with
+                              alphanumeric characters
+                            </Typography>
+                          </Box>
                         </Box>
                       </MenuItem>
                       <MenuItem value="HASH">
@@ -366,7 +385,15 @@ const UrlShortener: Component = () => {
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
                           <CodeIcon sx={{ color: "primary.main" }} />
-                          <span>Hash</span>
+                          <Box>
+                            <Typography>Hash</Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Hash method generates a hash-based short URL
+                            </Typography>
+                          </Box>
                         </Box>
                       </MenuItem>
                       <MenuItem value="SECURE">
@@ -374,7 +401,16 @@ const UrlShortener: Component = () => {
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
                           <LockIcon sx={{ color: "primary.main" }} />
-                          <span>Secure</span>
+                          <Box>
+                            <Typography>Secure</Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Secure method generates a secure short URL with
+                              additional security
+                            </Typography>
+                          </Box>
                         </Box>
                       </MenuItem>
                     </Select>
@@ -414,7 +450,7 @@ const UrlShortener: Component = () => {
                 </Grid>
 
                 {showUtmParams() ? (
-                  <Box sx={{ width: "100%" }}>
+                  <Box sx={{ width: "100%", paddingLeft: 3 }}>
                     <Typography variant="subtitle1" sx={{ mb: 2 }}>
                       UTM Parameters
                     </Typography>
@@ -480,7 +516,14 @@ const UrlShortener: Component = () => {
                     color="primary"
                     fullWidth
                     disabled={isLoading()}
-                    sx={{ borderRadius: 0, py: 1.5, px: 3 }}
+                    sx={{
+                      borderRadius: 0,
+                      py: 1.5,
+                      px: 3,
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      textTransform: "none",
+                    }}
                   >
                     {isLoading() ? "Shortening..." : "Shorten URL"}
                   </Button>
@@ -517,7 +560,7 @@ const UrlShortener: Component = () => {
 
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                  <Card sx={{ height: "100%" }}>
+                  <Card sx={{ height: "100%", borderRadius: 0.1 }}>
                     <CardContent>
                       <Typography
                         variant="h6"
@@ -646,7 +689,7 @@ const UrlShortener: Component = () => {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <Card sx={{ height: "100%" }}>
+                  <Card sx={{ height: "100%", borderRadius: 0.1 }}>
                     <CardContent>
                       <Typography
                         variant="h6"
@@ -662,7 +705,7 @@ const UrlShortener: Component = () => {
                               textAlign: "center",
                               p: 2,
                               bgcolor: "background.default",
-                              borderRadius: 1,
+                              borderRadius: 0.1,
                             }}
                           >
                             <LinkOffIcon
@@ -689,7 +732,7 @@ const UrlShortener: Component = () => {
                               textAlign: "center",
                               p: 2,
                               bgcolor: "background.default",
-                              borderRadius: 1,
+                              borderRadius: 0.1,
                             }}
                           >
                             {urlStats()?.method === "CUSTOM" && (
@@ -808,7 +851,7 @@ const UrlShortener: Component = () => {
                 sx={{
                   height: "100%",
                   bgcolor: "background.paper",
-                  borderRadius: 2,
+                  borderRadius: 0.1,
                   transition: "transform 0.3s, box-shadow 0.3s",
                   "&:hover": {
                     transform: "translateY(-5px)",

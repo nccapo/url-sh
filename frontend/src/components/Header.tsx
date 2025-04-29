@@ -5,7 +5,21 @@ const Header: Component = () => {
   return (
     <AppBar position="static" color="transparent" elevation={0}>
       <Toolbar>
-        <Box sx={{ flexGrow: 1, textAlign: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexGrow: 1,
+            textAlign: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src="/url_shortener.png"
+            alt="Short URL"
+            width="60"
+            height="60"
+          />
           <Typography
             variant="h5"
             component="h1"

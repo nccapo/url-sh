@@ -21,8 +21,15 @@ const Contact: Component = () => {
             form below and we'll get back to you as soon as possible.
           </Typography>
           <Box component="form" sx={{ mt: 3 }}>
-            <TextField fullWidth label="Name" margin="normal" required />
             <TextField
+              sx={{ borderRadius: 0 }}
+              fullWidth
+              label="Name"
+              margin="normal"
+              required
+            />
+            <TextField
+              sx={{ borderRadius: 0 }}
               fullWidth
               label="Email"
               type="email"
@@ -30,6 +37,7 @@ const Contact: Component = () => {
               required
             />
             <TextField
+              sx={{ borderRadius: 0 }}
               fullWidth
               label="Message"
               multiline
